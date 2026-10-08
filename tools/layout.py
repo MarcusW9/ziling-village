@@ -5,7 +5,7 @@ A='assets/buildings/';P='assets/props/';T='assets/trees/';B='assets/bushes/';L='
 S=[('tea_house',A+'tea_house.png',132,132,165,0),('calli',A+'calligrapher.png',320,112,120,0),('back_house',V+'farmhouse_porch.png',322,76,92,0),
 ('shop1',A+'house_plain.png',490,62,84,0),('shop2',A+'house_plain.png',575,62,84,0),
 ('stall_r',A+'stall_red.png',478,114,50,0),('stall_b',A+'stall_blue.png',532,114,46,0),('stall_t',A+'stall_tan.png',586,114,50,0),
-('home',A+'home.png',125,322,140,0),('granny',A+'granny_house.png',556,320,200,0),
+('home',A+'home.png',125,322,140,0),('granny',A+'granny_house_tidy.png',529,320,145,0),
 ('ls1',P+'lantern_string.png',277,242,60,0),('ls2',P+'lantern_string.png',413,242,60,0),('ls3',P+'lantern_string.png',318,358,136,0),
 ('board',P+'notice_board.png',344,262,50,0),('well',P+'well.png',283,304,32,0),('sundial',P+'sundial.png',362,302,15,0),
 ('lion1',P+'stone_lion.png',100,138,12,0),('lion2',P+'stone_lion.png',164,138,12,1),
@@ -18,7 +18,7 @@ S=[('tea_house',A+'tea_house.png',132,132,165,0),('calli',A+'calligrapher.png',3
 # home yard: everything against the walls
 ('wash',L+'washing_line.png',212,268,30,0),('wood',L+'firewood.png',44,304,18,0),('jar1',L+'water_jar.png',196,304,11,0),
 # granny yard
-('fence1',L+'fence_straight.png',466,262,26,0),('jar2',L+'water_jar_lid.png',642-38,300,10,0),('fbed1',V+'flower_bed_1.png',478,348,34,0),
+('fence1',L+'fence_straight.png',466,262,26,0),('fbed1',V+'flower_bed_1.png',478,348,34,0),
 # back house yard
 
 # --- greenery: willows ONLY on the canal, framing the square
@@ -34,7 +34,7 @@ S=[('tea_house',A+'tea_house.png',132,132,165,0),('calli',A+'calligrapher.png',3
 ('sqL',B+'azalea.png',254,258,16,0),('sqR',B+'azalea.png',436,258,16,1),
 ('reedL1',B+'reeds.png',6,176,12,0),('reedL2',B+'reeds.png',16,182,9,1),('reedR1',B+'reeds.png',630,200,12,0),('reedR2',B+'reeds.png',620,206,9,1),
 ('fernL',B+'fern.png',20,254,12,0),
-('apples','assets/props2/apple_crate.png',441,122,22,0),('umbrella','assets/props2/oil_umbrella.png',602,336,22,0),('teatray','assets/props2/tea_tray.png',192,140,18,0),('jars3','assets/props2/clay_jars.png',448,304,16,1),('oar','assets/props2/oar_rope.png',76,212,18,0),
+('apples','assets/props2/apple_crate.png',441,122,22,0),('umbrella','assets/props2/oil_umbrella.png',602,336,22,0),('teatray','assets/props2/tea_tray.png',192,140,18,0),('oar','assets/props2/oar_rope.png',76,212,18,0),
 ('top1',P+'willow.png',18,40,46,0),('top2',T+'camphor.png',62,22,42,1),('top3',P+'willow.png',204,26,40,1),('top4',T+'willow_tall.png',268,34,34,0),
 ('top5',T+'camphor_2.png',372,24,38,0),('top6',P+'willow.png',438,40,40,1),('top7',T+'camphor.png',636,40,40,1),('top8',T+'willow_tall.png',620,18,30,0),
 ('left1',T+'camphor.png',6,118,40,0),('left2',T+'camphor_2.png',8,346,46,1),('left3',P+'willow.png',8,300,40,0),
@@ -69,14 +69,58 @@ for k,f,cx,b0,w,fl in S:
         if sizes[i]<0.002*red.size:continue
         yy,xx=c;x=xx*w/im.width
         if fl:x=w-x
-        pts.append([round(cx-w/2+x),round(b0-h+yy*h/im.height)])
-lit='['+','.join('[%d,%d]'%(x,y) for x,y in pts)+']'
+        pts.append([round(cx-w/2+x),round(b0-h+yy*h/im.height),0.55 if k in ('ls1','ls2') else 1])
+
+# --- building contact shadows, window lights and lantern masks
+from PIL import ImageFilter, ImageDraw
+# key: (wall-base y fraction, x0 fraction, x1 fraction, strength)
+SHADOWS={'tea_house':(.88,.04,.96,1),'calli':(.98,.08,.85,1),'shop1':(.98,.03,.97,1),'shop2':(.98,.03,.97,1),
+ 'home':(.76,.17,.85,1),'granny':(.82,.04,.98,1),'stall_r':(.99,.08,.92,.6),'stall_b':(.99,.08,.92,.6),'stall_t':(.99,.08,.92,.6),
+ 'well':(.97,.15,.85,.6),'board':(.98,.1,.9,.5),'sundial':(.98,.2,.8,.5)}
+# window and doorway rectangles as fractions of each building image: (x0,y0,x1,y1, always_on)
+WINDOWS={'tea_house':[(.21,.68,.39,.80,0),(.61,.68,.79,.80,0),(.44,.68,.56,.88,1),(.27,.37,.36,.46,0),(.42,.37,.57,.46,0),(.63,.37,.73,.46,0)],
+ 'home':[(.24,.53,.35,.64,1),(.65,.53,.76,.64,1)],
+ 'granny':[(.32,.53,.45,.62,0),(.76,.53,.92,.62,0),(.58,.50,.70,.80,0)],
+ 'calli':[(.44,.55,.76,.86,0),(.23,.62,.35,.95,0)],
+ 'shop1':[(.17,.57,.24,.75,0),(.79,.57,.86,.75,0),(.42,.62,.59,.95,0)],
+ 'shop2':[(.17,.57,.24,.75,0),(.79,.57,.86,.75,0),(.42,.62,.59,.95,0)]}
+gbase=Image.new('RGBA',(640,360),(0,0,0,0));gd=ImageDraw.Draw(gbase)
+wins=[];masks=[]
+rnd=random.Random(11)
+for o in objs:
+    k=o['k']
+    if k in SHADOWS:
+        fy,fx0,fx1,st=SHADOWS[k];y=o['y']+fy*o['h'];x0=o['x']+fx0*o['w'];x1=o['x']+fx1*o['w']
+        gd.ellipse([x0,y-4,x1,y+6],fill=(10,25,15,int(120*st)))
+    if k in WINDOWS:
+        for (a,b,c,d,on) in WINDOWS[k]:
+            wins.append([round(o['x']+a*o['w']),round(o['y']+b*o['h']),max(2,round((c-a)*o['w'])),max(2,round((d-b)*o['h'])),o['base'],1.5 if on else round(rnd.uniform(.9,.99),3)])
+for k,f,cx,b0,w,fl in S:
+    if k not in LIT:continue
+    im=Image.open(f).convert('RGBA');h=round(im.height*w/im.width);im=im.resize((w,h),Image.LANCZOS)
+    if fl:im=ImageOps.mirror(im)
+    a=np.array(im).astype(int);red=(a[:,:,0]>150)&(a[:,:,1]<110)&(a[:,:,2]<100)&(a[:,:,3]>0)
+    red=nd.binary_dilation(red,iterations=1)&(a[:,:,3]>0)
+    a[~red,3]=0
+    bb=io.BytesIO();Image.fromarray(a.astype('uint8')).save(bb,'PNG',optimize=True)
+    masks.append([round(cx-w/2),b0-h,w,h,b0,'data:image/png;base64,'+base64.b64encode(bb.getvalue()).decode()])
+gbase=gbase.filter(ImageFilter.GaussianBlur(2.2))
+s=re.sub(r"const LMASK=.*?;\nconst WINS=.*?;\n",lambda m:'const LMASK='+json.dumps(masks)+';\nconst WINS='+json.dumps(wins)+';\n',s,count=1,flags=re.S)
+
+lit='['+','.join(('[%d,%d,%s]'%(x,y,sv)) for x,y,sv in pts)+']'
 s=re.sub(r"\[\[[0-9,\[\]]+\]\]\.forEach\(p=>LANT\.push\(p\)\);",lambda m:lit+'.forEach(p=>LANT.push(p));',s,count=1)
 print('glows',len(pts))
 
 # ground: clustered details only
 base=Image.open('assets/map/ground_base.png').convert('RGBA').resize((640,360),Image.LANCZOS)
 random.seed(3)
+base.alpha_composite(gbase)
+
+# stone path from the foot of the bridge into the square
+patch=base.crop((300,268,338,302))
+for yy in range(214,254,34):
+    pm=Image.new('L',patch.size,255);pd=ImageDraw.Draw(pm)
+    base.paste(patch,(400,yy),pm.filter(ImageFilter.GaussianBlur(0.8)))
 def put(nm,x,y,w,src=G):
     im=Image.open(src+nm+'.png').convert('RGBA');h=max(3,round(im.height*w/im.width));base.alpha_composite(im.resize((w,h),Image.LANCZOS),(round(x-w/2),round(y-h)))
 # tree-base clusters: grass + moss/clover hugging each trunk
