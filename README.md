@@ -31,6 +31,7 @@ assets/
   trees/ bushes/      plum, bamboo, camphor, pine, maple, willows, shrubs
   life/               fences, gate, washing line, firewood, jars, carts, bench
   decorations/        lantern pole, stone lantern, incense burner, banners, shrine, koi pond
+  south/              pieces cut from the painted south map (courtyard house, inn, pavilion, stalls, shrines, boat)
   ground/ canal/      grass, flowers, rocks, moss, leaves; lily pads, reeds, jetty, boat
   village2/           second building sheet (courtyard house, farmhouse, beds, stalls...)
   sprites/            spirit sheets, player sheet, covered boat
@@ -38,6 +39,7 @@ assets/
   source-sheets/      the original AI images every asset was cut from
 tools/
   magcut.py           cut a magenta-background sheet into separate PNGs
+  mapcut.py           cut objects out of a painted map (grass, paving, dirt, water background); south_cuts.json lists the south pieces
   sprite2.py          shrink a spirit concept into 32x32 game sprites
   player.py           shrink the player sheet into walk frames
   fringe.py           clean light fringes off cut-outs

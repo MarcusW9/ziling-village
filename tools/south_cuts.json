@@ -1,0 +1,117 @@
+{
+ "src": "assets/source-sheets/painted_south.png",
+ "out": "assets/south",
+ "items": {
+  "courtyard_house": [
+   [
+    64,
+    170,
+    368,
+    492
+   ],
+   [
+    "grass",
+    "paving",
+    "dirt"
+   ],
+   [
+    [
+     72,
+     436,
+     358,
+     488
+    ]
+   ]
+  ],
+  "inn": [
+   [
+    778,
+    146,
+    1024,
+    354
+   ],
+   [
+    "grass",
+    "paving",
+    "dirt"
+   ]
+  ],
+  "pavilion_boardwalk": [
+   [
+    520,
+    254,
+    712,
+    412
+   ],
+   [
+    "water",
+    "grass",
+    "paving"
+   ]
+  ],
+  "rowing_boat_1": [
+   [
+    420,
+    184,
+    460,
+    254
+   ],
+   [
+    "water",
+    "paving"
+   ]
+  ],
+  "shrine_incense": [
+   [
+    710,
+    402,
+    772,
+    500
+   ],
+   [
+    "grass",
+    "paving",
+    "dirt"
+   ]
+  ],
+  "shrine_small": [
+   [
+    612,
+    0,
+    704,
+    76
+   ],
+   [
+    "grass",
+    "paving",
+    "dirt"
+   ]
+  ],
+  "cloth_stall_1": [
+   [
+    790,
+    386,
+    892,
+    484
+   ],
+   [
+    "grass",
+    "paving",
+    "dirt"
+   ]
+  ],
+  "cloth_stall_2": [
+   [
+    880,
+    386,
+    992,
+    484
+   ],
+   [
+    "grass",
+    "paving",
+    "dirt"
+   ]
+  ]
+ }
+}
