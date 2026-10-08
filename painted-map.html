@@ -1,4 +1,9 @@
-<title>Ziling Village</title>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ziling Village (painted map)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@400;700&family=Nunito:wght@400;600;800&display=swap">
@@ -205,6 +210,8 @@ button{font-family:inherit}
 @media (max-width:560px){.recap .stats{grid-template-columns:1fr}.bigh{font-size:52px}.logo{font-size:24px}}
 @media (prefers-reduced-motion:reduce){.shake{animation:none}.card,#toast,#world{transition:none}}
 </style>
+</head>
+<body>
 
 <div id="app">
   <header class="bar">
@@ -786,3 +793,6 @@ const fontReady=document.fonts&&document.fonts.load?Promise.race([document.fonts
 const ld=im=>new Promise(r=>{if(im.complete)r();else{im.onload=r;im.onerror=r}});const mapReady=Promise.all([ld(MAPIMG),ld(MAP2)]);
 Promise.all([fontReady.catch(()=>{}),mapReady]).then(boot,boot);
 </script>
+
+</body>
+</html>
