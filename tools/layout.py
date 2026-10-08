@@ -34,7 +34,7 @@ S=[('tea_house',A+'tea_house.png',132,132,165,0),('calli',A+'calligrapher.png',3
 ('sqL',B+'azalea.png',254,258,16,0),('sqR',B+'azalea.png',436,258,16,1),
 ('reedL1',B+'reeds.png',6,176,12,0),('reedL2',B+'reeds.png',16,182,9,1),('reedR1',B+'reeds.png',630,200,12,0),('reedR2',B+'reeds.png',620,206,9,1),
 ('fernL',B+'fern.png',20,254,12,0),
-('umbrella','assets/props2/oil_umbrella.png',618,338,22,0),('teatray','assets/props2/tea_tray.png',192,140,18,0),('jars3','assets/props2/clay_jars.png',448,304,16,1),('oar','assets/props2/oar_rope.png',76,212,18,0),
+('apples','assets/props2/apple_crate.png',441,122,22,0),('umbrella','assets/props2/oil_umbrella.png',618,338,22,0),('teatray','assets/props2/tea_tray.png',192,140,18,0),('jars3','assets/props2/clay_jars.png',448,304,16,1),('oar','assets/props2/oar_rope.png',76,212,18,0),
 ('top1',P+'willow.png',18,40,46,0),('top2',T+'camphor.png',62,22,42,1),('top3',P+'willow.png',204,26,40,1),('top4',T+'willow_tall.png',268,34,34,0),
 ('top5',T+'camphor_2.png',372,24,38,0),('top6',P+'willow.png',438,40,40,1),('top7',T+'camphor.png',636,40,40,1),('top8',T+'willow_tall.png',620,18,30,0),
 ('left1',T+'camphor.png',6,118,40,0),('left2',T+'camphor_2.png',8,346,46,1),('left3',P+'willow.png',8,300,40,0),
