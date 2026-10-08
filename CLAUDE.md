@@ -5,6 +5,7 @@ Cozy top-down browser game for learning HSK 1 Mandarin. See README.md for the fu
 ## How the project fits together
 
 - `index.html` is the main game. It is one self-contained file: code, CSS and every image embedded as data URIs. It also runs on GitHub Pages, so keep its `<!doctype>`, `<head>` and UTF-8 charset.
+- `tools/player_walk.py` embeds the player's 4-direction walk cycle (down, up, right; left is right mirrored). Run it after changing the frames in `assets/sprites/player/`.
 - `tools/spirits.py` rebuilds the six spirit sprites at one shared visible height. Run it after changing any spirit sheet in `assets/sprites/`.
 - `tools/layout.py` owns the village layout. It also generates the lantern glow points from the red lanterns in each lantern object. It re-embeds every placed asset and the detailed ground into `index.html`. **After changing any asset or position, run `python3 tools/layout.py` from the repo root** instead of hand-editing the `OBJS` array or the `MAPIMG` data URI.
 - `layout.py` also holds `SHADOWS` (contact shadow per building, as fractions of its image) and `WINDOWS` (window and door rectangles that light up at night). Moving a building moves its shadow and windows.
