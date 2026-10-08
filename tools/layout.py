@@ -2,7 +2,7 @@ import json,io,base64,random
 from PIL import Image, ImageOps
 A='assets/buildings/';P='assets/props/';T='assets/trees/';B='assets/bushes/';L='assets/life/';V='assets/village2/';D='assets/decorations/';G='assets/ground/';C='assets/canal/'
 # (key,file,cx,base,width,flip)
-S=[('tea_house',A+'tea_house.png',132,132,165,0),('calli',A+'calligrapher.png',320,112,120,0),('back_house',V+'farmhouse_porch.png',322,76,92,0),
+S=[('tea_house',A+'tea_house.png',132,132,165,0),('calli',A+'calligrapher_blank.png',320,112,120,0),('back_house',V+'farmhouse_porch.png',322,76,92,0),
 ('shop1',A+'house_plain.png',490,62,84,0),('shop2',A+'house_plain.png',575,62,84,0),
 ('stall_r',A+'stall_red.png',478,114,50,0),('stall_b',A+'stall_blue.png',532,114,46,0),('stall_t',A+'stall_tan.png',586,114,50,0),
 ('home',A+'home.png',125,322,140,0),('granny',A+'granny_house_tidy.png',529,320,145,0),
