@@ -9,6 +9,8 @@ Cozy top-down browser game for learning HSK 1 Mandarin. See README.md for the fu
 - `tools/layout.py` owns the village layout. It also generates the lantern glow points from the red lanterns in each lantern object. It re-embeds every placed asset and the detailed ground into `index.html`. **After changing any asset or position, run `python3 tools/layout.py` from the repo root** instead of hand-editing the `OBJS` array or the `MAPIMG` data URI.
 - `layout.py` also holds `SHADOWS` (contact shadow per building, as fractions of its image) and `WINDOWS` (window and door rectangles that light up at night). Moving a building moves its shadow and windows.
 - Placement entries are `(key, file, centre_x, base_y, width, flip)` on a 640×360 map. `base_y` is where the object touches the ground, used for depth sorting with the player and spirits.
+- `tools/layout_south.py` builds the south garden quarter the same way: ground, objects, shadows, window lights, lantern glows, the walkable grid (water blocks walking, the footbridge doesn't) and its click areas. Its source images (`south_layout`, `south_ground`, `south_assets` in `assets/source-sheets/`) share one 1024×577 frame, so positions in the script are in that frame and scaled by 0.625. Run it after changing anything in the south area.
+- The south area has no canal, on purpose: the village canal runs east–west, so the south uses a stream and koi pond instead.
 - `painted-map.html` is the older single-image version, kept for comparison only.
 - Check the script still parses after edits: extract the `<script>` block and run `node --check`.
 

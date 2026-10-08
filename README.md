@@ -44,6 +44,7 @@ tools/
   player.py           shrink the player sheet into walk frames
   fringe.py           clean light fringes off cut-outs
   layout.py           the village layout: places every asset and rebuilds index.html
+  layout_south.py     the south garden quarter layout, built the same way
 ```
 
 ## Changing the village layout
@@ -86,6 +87,5 @@ Upload `assets/buildings/tea_house.png` as the style reference. Leave signs and 
 ## Next steps
 
 - Collision, so the player can't walk through buildings, trees or fences
-- Rebuild the south area in layers using the courtyard house, farmhouse, koi pond and jetty
 - Redraw the six spirits in Aseprite with one shared palette
 - Move to Phaser 3 + Tiled, as planned in the design document
