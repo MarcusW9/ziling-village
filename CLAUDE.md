@@ -17,6 +17,7 @@ Cozy top-down browser game for learning HSK 1 Mandarin. See README.md for the fu
 
 ## Asset rules
 
+- `tools/defringe.py` removes light halos from a cut-out (edge pixels clearly lighter than the art inside them) and refills small holes. Run it on any sprite cut from a pale background.
 - New art should be generated on a solid flat magenta (#FF00FF) background. Cut it with `tools/magcut.py`. Grey or white backgrounds leave fringes on plaster walls and awnings.
 - Store originals in `assets/source-sheets/` and cut-outs in the matching `assets/<category>/` folder.
 - No AI-written Chinese text in art. Signs and banners stay blank; real characters are drawn in code. Fake characters are worse than none in a game that teaches characters.
