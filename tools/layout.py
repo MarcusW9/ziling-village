@@ -140,7 +140,8 @@ for x,y in [(6,138),(56,140)]:put('rocks',x,y,8)
 for x,y in [(632,150),(600,150)]:put('rocks',x,y,7)
 put('fallen_leaves',400,72,10);put('fallen_leaves',204,74,9)
 # canal life in two calm groups
-put('lily_pads_lotus',186,206,24,C);put('lily_pads_lotus',214,212,14,C);put('lily_pads_lotus',536,200,22,C);put('lily_pads_lotus',512,206,13,C)
+# no lily pads west of the bridge: the covered boat travels x 0-318 and would float over them
+put('lily_pads_lotus',536,200,22,C);put('lily_pads_lotus',512,206,13,C)
 put('rowing_boat',488,214,30,C)
 bb=io.BytesIO();base.convert('RGB').save(bb,'PNG',optimize=True)
 gu='data:image/png;base64,'+base64.b64encode(bb.getvalue()).decode()
