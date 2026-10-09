@@ -152,6 +152,7 @@ def spot(word, key, ax, ay, pad=0):
 spots = [spot('fandian', 'inn', 556, 152), spot('zhuozi', 'table0', 503, 166, 2), spot('yizi', 'bench', 392, 306, 2),
          spot('yifu', 'stall_cloth', 513, 350), spot('dongxi', 'stall_pots', 578, 350),
          spot('pv_qiao', 'footbridge', 412, 160, 2),
+         {'word': 'li', 'x': 398, 'y': 222, 'w': 54, 'h': 32, 'ax': 432, 'ay': 284},
          {'word': 'pv_he', 'x': 400, 'y': 30, 'w': 40, 'h': 70, 'ax': 448, 'ay': 70},
          {'act': 'north', 'label': 'Back to the village square ↑', 'x': 284, 'y': 0, 'w': 76, 'h': 14, 'ax': 322, 'ay': 6}]
 
