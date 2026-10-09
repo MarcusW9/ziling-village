@@ -132,6 +132,8 @@ wins = (fr('court_back', [(196, 155, 221, 176, .95), (285, 155, 310, 176, .95), 
         fr('court_front', [(132, 433, 157, 450, .9), (323, 433, 348, 450, .93), (222, 428, 262, 470, 1.5)]) +
         fr('inn', [(792, 72, 824, 94, .96), (912, 72, 944, 94, .98), (858, 72, 886, 96, .99),
                    (797, 143, 826, 161, 1.5), (912, 143, 942, 161, 1.5), (862, 150, 886, 180, 1.5)]))
+from winmask import layer, add_masks
+wins = add_masks(wins, layer(objs, lambda o: o['img']))
 lant, masks = [], []
 for o in objs:
     if o['k'] != 'lanterns': continue

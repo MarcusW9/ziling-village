@@ -110,6 +110,8 @@ for k,f,cx,b0,w,fl in S:
     bb=io.BytesIO();Image.fromarray(a.astype('uint8')).save(bb,'PNG',optimize=True)
     masks.append([round(cx-w/2),b0-h,w,h,OVERHEAD.get(k,b0),'data:image/png;base64,'+base64.b64encode(bb.getvalue()).decode()])
 gbase=gbase.filter(ImageFilter.GaussianBlur(2.2))
+from winmask import layer,add_masks
+wins=add_masks(wins,layer(objs,lambda o:Image.open(io.BytesIO(base64.b64decode(o['src'].split(',')[1])))))
 s=re.sub(r"const LMASK=.*?;\nconst WINS=.*?;\n",lambda m:'const LMASK='+json.dumps(masks)+';\nconst WINS='+json.dumps(wins)+';\n',s,count=1,flags=re.S)
 
 lit='['+','.join(('[%d,%d,%s]'%(x,y,sv)) for x,y,sv in pts)+']'
