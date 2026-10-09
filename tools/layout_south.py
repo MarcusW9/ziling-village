@@ -151,7 +151,7 @@ def at(key, pad=0):
 def spot(word, key, ax, ay, pad=0):
     x, y, w, h = at(key, pad); return {'word': word, 'x': x, 'y': y, 'w': w, 'h': h, 'ax': ax, 'ay': ay}
 spots = [spot('fandian', 'inn', 556, 152), spot('zhuozi', 'table0', 503, 166, 2), spot('yizi', 'bench', 392, 306, 2),
-         spot('yifu', 'stall_cloth', 513, 350), spot('dongxi', 'stall_pots', 578, 350),
+         spot('yifu', 'stall_cloth', 513, 350), spot('cai', 'stall_veg', 445, 350), spot('mifan', 'table1', 589, 166, 2), spot('dongxi', 'stall_pots', 578, 350),
          spot('pv_qiao', 'footbridge', 412, 160, 2),
          {'word': 'li', 'x': 398, 'y': 222, 'w': 54, 'h': 32, 'ax': 432, 'ay': 284},
          {'word': 'pv_he', 'x': 400, 'y': 30, 'w': 40, 'h': 70, 'ax': 448, 'ay': 70},
