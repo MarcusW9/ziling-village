@@ -44,8 +44,8 @@ def side_by_side(a, b, gap=-2):
 
 T = S + 'twins/'; D = S + 'dragons/'
 sets = {
-    # 牛牛's square, solid body reads larger than the rounder spirits at the same height
-    'niu': {0: stage({k: S + f'niuniu/{k}.png' for k in ('front', 'happy', 'sleep')}, S + 'niuniu/front.png', 13)},
+    # 牛牛 is the painted clay Spring Ox (春牛); his blocky body reads larger than the rounder spirits at the same height
+    'niu': {0: stage({k: S + f'niuniu_clay/{k}.png' for k in ('front', 'happy', 'sleep')}, S + 'niuniu_clay/front.png', 14)},
     'fish': {0: stage({k: S + f'yuyu_v2/{k}.png' for k in ('front', 'happy', 'sleep')}, S + 'yuyu_v2/front.png')},
 }
 # twins: single poses at the base size, then joined into pairs
@@ -65,7 +65,7 @@ spr = {k: {st: {p: [uri(im), im.width, im.height] for p, im in poses.items()} fo
 def portrait(path):
     im = Image.open(path).convert('RGBA'); im = im.crop(im.getbbox()); im.thumbnail((30, 30), Image.LANCZOS)
     c = Image.new('RGBA', (32, 32)); c.paste(im, ((32 - im.width) // 2, (32 - im.height) // 2), im); return uri(c)
-av = {'niu': {0: portrait(S + 'niuniu/front.png')},
+av = {'niu': {0: portrait(S + 'niuniu_clay/front.png')},
       'fish': {0: portrait(S + 'yuyu_v2/front.png'), 1: portrait(T + 'pair_yinyang.png'), 2: portrait(D + 'pair_coil.png')}}
 
 s = open('index.html').read()
