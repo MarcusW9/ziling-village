@@ -74,7 +74,8 @@ add('inn', piece(752, 0, 994, 227), 752, 0, 222)
 pav = piece(537, 27, 706, 244); add('pavilion', pav, 801 - 120 / 2, 415 - pav.height * 120 / pav.width, 405, 120)
 # footbridge: keep the deck only, laid over the stream where the layout shows it
 fb = piece(503, 287, 641, 435, rows=(287, 392)); fb = fb.crop(fb.getbbox())
-add('footbridge', fb, 659 - 86 / 2, 288 - fb.height * 86 / fb.width, 288, 86)
+# base 0: the deck is a floor the player walks on, so it always draws beneath characters
+add('footbridge', fb, 659 - 86 / 2, 288 - fb.height * 86 / fb.width, 0, 86)
 # inn terrace tables and stools, as in the layout
 table = piece(689, 463, 772, 542); stool = piece(648, 489, 684, 530)
 for i, tx in enumerate((805, 943)):
