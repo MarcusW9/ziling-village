@@ -12,12 +12,13 @@ import numpy as np, scipy.ndimage as nd
 from PIL import Image
 
 HEIGHT = 26
-# name: (scene, x, y-base on the 640x360 map, idle pose, greet pose, flip-to-face-left)
+# name: (scene, x, y-base on the 640x360 map, idle pose, greet pose, flip-to-face-left, height px)
+# heights: the player is 25 px; adults 25-26, so they read as the player's peers
 NPCS = {
-    'teahouse':    ('village', 178, 151, 0, 5, False),   # beside the tea tray, bows
-    'shopkeeper':  ('village', 506, 132, 0, 3, False),   # in front of the stalls, offers an apple
-    'calligrapher':('village', 347, 124, 0, 3, False),   # by his studio door, strokes his beard (back view and brush swirl overlap on the sheet, so they cut as one piece)
-    'innkeeper':   ('south',   546, 166, 0, 5, False),   # on the inn terrace, waves
+    'teahouse':    ('village', 178, 151, 0, 5, False, 26),   # beside the tea tray, bows
+    'shopkeeper':  ('village', 506, 132, 0, 3, False, 25),   # in front of the stalls, offers an apple
+    'calligrapher':('village', 347, 124, 0, 3, False, 26),   # by his studio door, strokes his beard (back view and brush swirl overlap on the sheet, so they cut as one piece)
+    'innkeeper':   ('south',   546, 166, 0, 5, False, 25),   # on the inn terrace, waves
 }
 
 def split(path):
@@ -46,7 +47,7 @@ def uri(im):
     b = io.BytesIO(); im.save(b, 'PNG'); return 'data:image/png;base64,' + base64.b64encode(b.getvalue()).decode()
 
 data = []
-for name, (scene, x, y, idle, greet, flip) in NPCS.items():
+for name, (scene, x, y, idle, greet, flip, HEIGHT) in NPCS.items():
     poses = split(f'assets/source-sheets/npc_{name}.png')
     os.makedirs(f'assets/sprites/npcs/{name}', exist_ok=True)
     for i, p in enumerate(poses): p.save(f'assets/sprites/npcs/{name}/pose{i}.png')

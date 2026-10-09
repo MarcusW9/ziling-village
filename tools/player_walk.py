@@ -10,7 +10,7 @@ in a W x H frame so the feet stay put while walking.
 import json, io, base64, re
 from PIL import Image
 
-HEIGHT, W = 28, 28
+HEIGHT, W = 25, 26
 D = 'assets/sprites/player/'
 SETS = {'down': [0, 1, 2, 3], 'up': [4, 5, 6, 7], 'right': [10, 14, 15], 'left': [8, 11, 12]}
 scale = HEIGHT / Image.open(D + 'f01.png').height
