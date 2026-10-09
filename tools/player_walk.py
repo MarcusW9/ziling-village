@@ -13,13 +13,16 @@ from PIL import Image
 HEIGHT, W = 25, 26
 D = 'assets/sprites/player/'
 SETS = {'down': [0, 1, 2, 3], 'up': [4, 5, 6, 7], 'right': [10, 14, 15], 'left': [8, 11, 12]}
-scale = HEIGHT / Image.open(D + 'f01.png').height
+# Each direction is scaled by its own tallest frame: the sheet draws the side views
+# ~12% taller than the front, which clipped the head and made the player grow sideways.
+CANVAS = HEIGHT + 6   # headroom so no frame is ever cut off
 out = {}
 for name, idx in SETS.items():
+    scale = HEIGHT / max(Image.open(D + f'f{k:02d}.png').height for k in idx)
     for n, k in enumerate(idx):
         im = Image.open(D + f'f{k:02d}.png').convert('RGBA')
         im = im.resize((round(im.width * scale), round(im.height * scale)), Image.LANCZOS)
-        f = Image.new('RGBA', (W, HEIGHT + 2)); f.paste(im, ((W - im.width) // 2, HEIGHT + 2 - im.height), im)
+        f = Image.new('RGBA', (W, CANVAS)); f.paste(im, ((W - im.width) // 2, CANVAS - im.height), im)
         b = io.BytesIO(); f.save(b, 'PNG'); out[f'{name}{n}'] = 'data:image/png;base64,' + base64.b64encode(b.getvalue()).decode()
 s = open('index.html').read()
 s, c = re.subn(r'const PL=\{\};for\(const \[k,u\] of Object\.entries\(\{.*?\}\)\)',
