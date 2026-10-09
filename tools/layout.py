@@ -42,6 +42,10 @@ S=[('tea_house',A+'tea_house.png',132,132,165,0),('calli',A+'calligrapher_blank.
 ('nb1',P+'willow.png',626,158,40,1),('nb2',P+'willow.png',228,160,36,0),
 ('right1',T+'camphor.png',638,268,38,1)]
 s=open('index.html').read();a=s.index('const OBJS=');e=s.index(';\n',a)
+# Hanging things the player walks under: sort them by their top edge so characters
+# always draw on top. The lantern strings at the square span the foot of the bridge,
+# and sorting them by their posts made the player clip behind the lanterns.
+OVERHEAD={'ls1':0,'ls2':0}
 cache={};objs=[]
 for k,f,cx,base,w,fl in S:
     key=(f,w,fl)
@@ -51,6 +55,7 @@ for k,f,cx,base,w,fl in S:
         if fl:r=ImageOps.mirror(r)
         b=io.BytesIO();r.save(b,'PNG',optimize=True);cache[key]='data:image/png;base64,'+base64.b64encode(b.getvalue()).decode()
     o={'k':k,'x':round(cx-w/2),'y':base-h,'w':w,'h':h,'base':base,'src':cache[key]}
+    if k in OVERHEAD: o['base']=OVERHEAD[k]
     objs.append(o)
 for x in (113,151):
     im=Image.open(D+('banner_left.png' if x<130 else 'banner_right.png')).convert('RGBA');h=round(im.height*6/im.width);r=im.resize((6,h),Image.LANCZOS)
@@ -103,7 +108,7 @@ for k,f,cx,b0,w,fl in S:
     red=nd.binary_dilation(red,iterations=1)&(a[:,:,3]>0)
     a[~red,3]=0
     bb=io.BytesIO();Image.fromarray(a.astype('uint8')).save(bb,'PNG',optimize=True)
-    masks.append([round(cx-w/2),b0-h,w,h,b0,'data:image/png;base64,'+base64.b64encode(bb.getvalue()).decode()])
+    masks.append([round(cx-w/2),b0-h,w,h,OVERHEAD.get(k,b0),'data:image/png;base64,'+base64.b64encode(bb.getvalue()).decode()])
 gbase=gbase.filter(ImageFilter.GaussianBlur(2.2))
 s=re.sub(r"const LMASK=.*?;\nconst WINS=.*?;\n",lambda m:'const LMASK='+json.dumps(masks)+';\nconst WINS='+json.dumps(wins)+';\n',s,count=1,flags=re.S)
 

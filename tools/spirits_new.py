@@ -44,7 +44,8 @@ def side_by_side(a, b, gap=-2):
 
 T = S + 'twins/'; D = S + 'dragons/'
 sets = {
-    'niu': {0: stage({k: S + f'niuniu/{k}.png' for k in ('front', 'happy', 'sleep')}, S + 'niuniu/front.png')},
+    # 牛牛's square, solid body reads larger than the rounder spirits at the same height
+    'niu': {0: stage({k: S + f'niuniu/{k}.png' for k in ('front', 'happy', 'sleep')}, S + 'niuniu/front.png', 13)},
     'fish': {0: stage({k: S + f'yuyu_v2/{k}.png' for k in ('front', 'happy', 'sleep')}, S + 'yuyu_v2/front.png')},
 }
 # twins: single poses at the base size, then joined into pairs
