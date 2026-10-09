@@ -4,7 +4,7 @@ A='assets/buildings/';P='assets/props/';T='assets/trees/';B='assets/bushes/';L='
 # (key,file,cx,base,width,flip)
 S=[('tea_house',A+'tea_house.png',132,132,165,0),('calli',A+'calligrapher_blank.png',320,112,120,0),('back_house',V+'farmhouse_porch.png',322,76,92,0),
 ('shop1',A+'house_plain.png',490,62,84,0),('shop2',A+'house_plain.png',575,62,84,0),
-('stall_r',A+'stall_red.png',478,114,50,0),('stall_b',A+'stall_blue.png',532,114,46,0),('stall_t',A+'stall_tan.png',586,114,50,0),
+('stall_r','assets/stalls/fruit_cloth.png',476,116,52,0),('stall_b','assets/stalls/fish_bamboo.png',531,116,52,0),('stall_t','assets/stalls/tea_tiled.png',585,116,44,0),
 ('home',A+'home.png',125,322,140,0),('granny',A+'granny_house_tidy.png',529,320,145,0),
 ('ls1',P+'lantern_string.png',277,242,60,0),('ls2',P+'lantern_string.png',413,242,60,0),('ls3',P+'lantern_string.png',318,358,136,0),
 ('board',P+'notice_board.png',344,262,50,0),('well',P+'well.png',283,304,32,0),('sundial',P+'sundial.png',362,302,15,0),

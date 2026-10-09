@@ -83,9 +83,9 @@ for i, tx in enumerate((805, 943)):
 add('bench', piece(846, 333, 975, 386), 590, 448, 478, 76)
 
 # stalls on the three dirt pads at the bottom right
-add_file('stall_veg', B + 'stall_red.png', 717, 548, 80)
-add_file('stall_cloth', S2 + 'cloth_stall_1.png', 821, 552, 98)
-add_file('stall_pots', B + 'stall_tan.png', 924, 548, 86)
+add_file('stall_veg', 'assets/stalls/buns_umbrella_cart.png', 712, 552, 96)
+add_file('stall_cloth', 'assets/stalls/cloth_bamboo.png', 821, 552, 94)
+add_file('stall_pots', 'assets/stalls/pottery_cloth.png', 926, 552, 92)
 add_file('apples', 'assets/props2/apple_crate.png', 642, 566, 36)
 add_file('lanterns', P + 'lantern_string.png', 510, 577, 212)
 
