@@ -367,7 +367,7 @@ function grade(id,ok,type){
 function spiritCheck(sp){
   if(!SP[sp])return;const ids=spWords(sp);
   if(!S.met[sp]&&ids.some(id=>S.words[id].st>0)){S.met[sp]=true;toast(`${SP[sp].n} peeks out at you!`)}
-  if(!S.befr[sp]&&ids.every(id=>S.words[id].st>=3)){S.befr[sp]=true;toast(`${SP[sp].n} is now your friend!`);if(!S.pet.got)setTimeout(()=>toast('Granny Wang has a surprise for you.'),3200)}
+  if(!S.befr[sp]&&ids.every(id=>S.words[id].st>=3)){S.befr[sp]=true;toast(`${SP[sp].n} is now your friend!`)}
   if(!S.evolved[sp]&&ids.every(id=>S.words[id].st>=4)){S.evolved[sp]=true;toast(`${SP[sp].n} evolved into ${SP[sp].evo}!`)}
   // second evolution: every word still mastered after surviving a 7-day review
   if(SP[sp].evo2&&S.evolved[sp]&&!S.evolved2[sp]&&ids.every(id=>S.words[id].st===4&&S.m4[id]&&S.words[id].last>=S.m4[id]+7)){S.evolved2[sp]=true;toast(`The twins leapt the Dragon Gate: ${SP[sp].evo2}!`)}
@@ -443,6 +443,8 @@ function finish(a){
   const b=$('#pbody');
   b.innerHTML=`<div class="done"><div class="donebig">完成</div><p>${r?'Request complete.':'Extra practice done.'} ${all?'Every request on the board is done. Rest at home when you are ready.':'Check the notice board for what is left.'}</p><div class="actions" style="justify-content:center"><button class="btn primary" id="cl">Back to the village</button></div></div>`;
   $('#cl').onclick=closePanel;if(r)toast(all?'All requests done!':'Request complete');
+  // first chat with Granny Wang ends with her gift: the puppy
+  if(a==='talk'&&!S.pet.got){$('#cl').textContent='Granny Wang has something for you';$('#cl').onclick=openPetGift}
 }
 
 /* Meet a new word */
@@ -572,7 +574,6 @@ function startMarket(){
   const go=()=>{if(m<meetNew.length)return meet(meetNew[m++],q(),go);sorting(ids,q(),()=>builder(pickSents('market',1)[0],q(),'Shopkeeper',()=>finish('market')))};go();
 }
 function startTalk(){
-  if(!S.pet.got&&Object.keys(S.befr).length)return openPetGift();
   const ids=pickWords(['yy','ry','jj','niu','fish','bao',...(S.pet.got?['pet']:[])],4);const b=openPanel("Granny Wang's house",'A chat about the day');
   b.innerHTML=`<p class="lead"><span class="zh">王奶奶</span>: <span class="zh">你好</span>! Sit down, let's talk. 雨雨 drifts under the eaves.</p><div id="q"></div>`;
   say('你好');quiz(ids,$('#q'),()=>builder(pickSents('talk',1)[0],$('#q'),'Granny Wang',()=>finish('talk')));
@@ -785,7 +786,7 @@ function openPetMenu(){
     pet.still=0;save();closePanel();toast(atHome?`${S.pet.name} settles in the yard.`:`${S.pet.name} sits and waits.`)}}
 function openPetGift(){
   const b=openPanel("Granny Wang's house",'A surprise');say('你好');
-  b.innerHTML=`<p class="lead"><span class="zh">王奶奶</span>: You've made a spirit friend! My dog had puppies, and this one keeps following you around. Take him. He's a <span class="zh">${wh('gou',{py:true})}</span>, a dog.</p>
+  b.innerHTML=`<p class="lead"><span class="zh">王奶奶</span>: Thank you for keeping an old woman company. My dog had puppies, and this one keeps following you around. Take him. He's a <span class="zh">${wh('gou',{py:true})}</span>, a dog.</p>
    <div class="meet"><img src="${PET.portrait||''}" style="width:80px;image-rendering:pixelated" alt=""><div class="py">What will you call him?</div></div>
    <div class="opts">${PET_NAMES.map(([h,p,en],i)=>`<button class="opt" data-n="${i}">${h}<small>${p} · ${en}</small></button>`).join('')}</div>`;
   b.querySelectorAll('[data-n]').forEach(btn=>btn.onclick=()=>{const [h,p]=PET_NAMES[+btn.dataset.n];say(h);
