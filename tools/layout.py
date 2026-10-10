@@ -17,7 +17,7 @@ S=[('tea_house',A+'tea_house.png',132,132,165,0),('calli',A+'calligrapher_blank.
 # market yard
 ('barrels',P+'barrels.png',618,58,26,0),('baskets2',L+'basket_stack.png',462,124,12,0),('cart',V+'handcart.png',588,146,26,0),
 # home yard: everything against the walls
-('wash',L+'washing_line.png',212,268,30,0),('wood',L+'firewood.png',44,304,18,0),('jar1',L+'water_jar.png',196,304,11,0),
+('wash',L+'washing_line.png',212,268,30,0),('wood',L+'firewood.png',44,304,18,0),('jar1',L+'water_jar.png',201,304,11,0),
 # granny yard
 ('fence1',L+'fence_straight.png',466,262,26,0),('fbed1',V+'flower_bed_1.png',478,348,34,0),
 # back house yard
