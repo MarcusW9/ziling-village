@@ -340,9 +340,9 @@ const toneOf=p=>{for(const ch of p){if(TONES[ch])return TONES[ch]}return 5};
 
 /* ---------- Save state ---------- */
 const KEY='ziling-village-v1';
-function fresh(){const s={day:1,clock:.04,words:{},met:{xz:true},befr:{},evolved:{},evolved2:{},m4:{},req:[],log:[],hint:{},start:{},intro:false,newToday:0,pet:{got:false,name:'',mode:'follow',sx:0,sy:0,scene:'village'}}; for(const id in WORDS)s.words[id]={st:0,due:0,last:0}; return s}
+function fresh(){const s={day:1,clock:.04,words:{},met:{xz:true},befr:{},evolved:{},evolved2:{},m4:{},req:[],log:[],hint:{},start:{},intro:false,newToday:0,pet:{got:true,name:'',mode:'follow',sx:0,sy:0,scene:'village'}}; for(const id in WORDS)s.words[id]={st:0,due:0,last:0}; return s}
 let S=fresh();
-try{const raw=localStorage.getItem(KEY); if(raw){const o=JSON.parse(raw); S=Object.assign(fresh(),o); for(const id in WORDS) if(!S.words[id]) S.words[id]={st:0,due:0,last:0}}}catch(e){}
+try{const raw=localStorage.getItem(KEY); if(raw){const o=JSON.parse(raw); S=Object.assign(fresh(),o); S.pet.got=true; for(const id in WORDS) if(!S.words[id]) S.words[id]={st:0,due:0,last:0}}}catch(e){}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- Helpers ---------- */
@@ -452,8 +452,6 @@ function finish(a){
   const b=$('#pbody');
   b.innerHTML=`<div class="done"><div class="donebig">完成</div><p>${r?'Request complete.':'Extra practice done.'} ${all?'Every request on the board is done. Rest at home when you are ready.':'Check the notice board for what is left.'}</p><div class="actions" style="justify-content:center"><button class="btn primary" id="cl">Back to the village</button></div></div>`;
   $('#cl').onclick=closePanel;if(r)toast(all?'All requests done!':'Request complete');
-  // first chat with Granny Wang ends with her gift: the puppy
-  if(a==='talk'&&!S.pet.got){$('#cl').textContent='Granny Wang has something for you';$('#cl').onclick=openPetGift}
 }
 
 /* Meet a new word */
@@ -752,10 +750,18 @@ function petScene(){ // after a scene change or a new day
   if(S.pet.mode==='follow'){pet.x=P.x-10;pet.y=P.y;pet.trail=[]}
   pet.sniff=null;pet.still=0;save()}
 function petNight(){return S.clock>.86}
+function petWalk(t,spd,dt){const dx=t[0]-pet.x,dy=t[1]-pet.y,d=Math.hypot(dx,dy);
+  if(d>90){[pet.x,pet.y]=t;pet.still+=dt;return}                    // far off (a scene change): just be there
+  if(d<.6){pet.still+=dt;return}
+  const st=Math.min(d,spd*dt);pet.x+=dx/d*st;pet.y+=dy/d*st;pet.walk+=st;pet.still=0;
+  pet.dir=Math.abs(dx)>Math.abs(dy)*1.2?(dx>0?'right':'left'):(dy<0?'up':'down')}
 function petUpdate(dt){
   if(!petShown())return;const m=S.pet.mode;
-  if(m==='home'){[pet.x,pet.y]=PET_HOME;pet.still+=dt;return}
-  if(m==='stay'){pet.x=S.pet.sx;pet.y=S.pet.sy;pet.still+=dt;return}
+  if(PUP){const B=KID.boy;let t=PUP.home;                              // playing with the kids
+    if(PUP.chase){const d=Math.hypot(pet.x-B.x,pet.y-B.y)||1;t=[B.x+(pet.x-B.x)/d*10,B.y+(pet.y-B.y)/d*4]}
+    petWalk(t,PUP.chase?48:40,dt);if(m==='follow')pet.trail=[[P.x,P.y]];return}
+  if(m==='home'){petWalk(PET_HOME,40,dt);return}
+  if(m==='stay'){petWalk([S.pet.sx,S.pet.sy],40,dt);return}
   // follow: walk the player's own path a few steps behind
   const lt=pet.trail[pet.trail.length-1];if(!lt||Math.hypot(P.x-lt[0],P.y-lt[1])>2)pet.trail.push([P.x,P.y]);
   if(pet.trail.length>600)pet.trail.splice(0,pet.trail.length-600);
@@ -774,10 +780,10 @@ function petUpdate(dt){
 function petImg(set,i){const f=PET[set][i%PET[set].length];const k=set+i%PET[set].length;if(!PETIMG[k]){const im=new Image();im.src=f[0];PETIMG[k]=im}return [PETIMG[k],f[1],f[2]]}
 function drawPet(t){
   if(!PET.down)return;let set,i;
-  const moving=pet.still<.12&&S.pet.mode==='follow';
+  const moving=pet.still<.12;
   if(moving){set=pet.dir;i=Math.floor(pet.walk/5)}
   else if(petNight()||pet.still>8){set='sleep';i=Math.floor(t*.8)}
-  else{set='sit';i=pet.sniff||(ENC&&ENC.e.pet&&ENC.ph==='beat')?Math.floor(t*6):0}   // wag on a find
+  else{set='sit';i=pet.sniff||(ENC&&ENC.e.pet&&ENC.ph==='beat')||(PUP&&!PUP.chase&&PLAY&&PLAY.ph==='beat')?Math.floor(t*6):0}   // wag on a find
   const [im,w,h]=petImg(set,i);if(!im.complete)return;const x=Math.round(pet.x),y=Math.round(pet.y);
   ctx.fillStyle='rgba(0,0,0,.22)';ctx.fillRect(x-Math.round(w/3),y+1,Math.round(w*2/3),2);
   ctx.drawImage(im,Math.round(x-w/2),y+2-h);
@@ -794,13 +800,13 @@ function openPetMenu(){
   $('#pCome').onclick=()=>{say('来');grade('lai',true,'inspect');S.pet.mode='follow';pet.trail=[[pet.x,pet.y],[P.x,P.y]];pet.still=0;save();closePanel();toast(`${S.pet.name} bounds over to you.`)};
   $('#pSit').onclick=()=>{say('坐');grade('zuo_sit',true,'inspect');if(atHome)S.pet.mode='home';else{S.pet.mode='stay';S.pet.sx=Math.round(pet.x);S.pet.sy=Math.round(pet.y);S.pet.scene=SCENE}
     pet.still=0;save();closePanel();toast(atHome?`${S.pet.name} settles in the yard.`:`${S.pet.name} sits and waits.`)}}
-function openPetGift(){
-  const b=openPanel("Granny Wang's house",'A surprise');say('你好');
-  b.innerHTML=`<p class="lead"><span class="zh">王奶奶</span>: Thank you for keeping an old woman company. My dog had puppies, and this one keeps following you around. Take him. He's a <span class="zh">${wh('gou',{py:true})}</span>, a dog.</p>
+function openPetName(){
+  const b=openPanel('Your puppy','A name for him');
+  b.innerHTML=`<p class="lead">This little <span class="zh">${wh('gou',{py:true})}</span>, a dog, has been yours since you arrived. Granny Wang's dog had puppies, and he picked you.</p>
    <div class="meet"><img src="${PET.portrait||''}" style="width:80px;image-rendering:pixelated" alt=""><div class="py">What will you call him?</div></div>
    <div class="opts">${PET_NAMES.map(([h,p,en],i)=>`<button class="opt" data-n="${i}">${h}<small>${p} · ${en}</small></button>`).join('')}</div>`;
   b.querySelectorAll('[data-n]').forEach(btn=>btn.onclick=()=>{const [h,p]=PET_NAMES[+btn.dataset.n];say(h);
-    S.pet={got:true,name:h,mode:'follow',sx:0,sy:0,scene:SCENE};grade('gou',true,'inspect');pet.x=P.x-10;pet.y=P.y;pet.trail=[];save();closePanel();
+    S.pet.name=h;grade('gou',true,'inspect');save();closePanel();
     toast(`${h} ${p} is your puppy now. Click him to tell him 来 or 坐.`)})}
 function goTo(tx,ty,cb){const N=y=>y<186;const pts=[];if(N(P.y)!==N(ty)){if(!N(P.y)&&P.y>222)pts.push([P.x,220]);pts.push([420,N(P.y)?134:220],[420,N(ty)?134:220])}pts.push([tx,ty]);P.path=pts;P.cb=cb}
 function update(dt){
@@ -853,7 +859,7 @@ function encFace(){const e=ENC.e,ks=encSp(),n=e.npc&&NPCS.find(n=>n.name===e.npc
 function encUpdate(dt){
   if(!ENC){
     // the puppy wanders over to say hello when you have been standing still a while
-    if(S.pet.got&&S.pet.mode==='follow'&&!P.path.length&&!pet.sniff&&P.idle>6&&GT>(pet.visitNext||20)){
+    if(S.pet.got&&!PUP&&S.pet.mode==='follow'&&!P.path.length&&!pet.sniff&&P.idle>6&&GT>(pet.visitNext||20)){
       const k=visibleSpirits().filter(k=>WAN[k]&&k!=='fish'&&k!=='mao'&&energy(k)>=.5&&Math.hypot(WAN[k].x-P.x,WAN[k].y-P.y)<90).sort((a,b)=>Math.hypot(WAN[a].x-P.x,WAN[a].y-P.y)-Math.hypot(WAN[b].x-P.x,WAN[b].y-P.y))[0];
       if(k){const w=WAN[k];encStart(PETVISIT,k);ENC.pt=[w.x+(pet.x<w.x?-13:13),w.y+1];return}}
     if((ENCWAIT-=dt)>0)return;const c=ENCS.filter(encOK);ENCWAIT=5;if(c.length)encStart(c[Math.random()*c.length|0]);return}
@@ -954,8 +960,21 @@ function playStart(force,at){const sc=KID.boy.scene,g=KG[sc],ns=Object.keys(g.n)
   PLAY={type,ph:'go',t:0,i:0,go:0}}
 const PLAYBEAT={tag:{len:3.5,acts:{boy:'cheer',girl:'jump'},beat:[[.2,'boy','heart'],[.9,'girl','note']]},
   sit:{len:8,acts:{boy:'sit',girl:'sit'},beat:[[1,'girl','note'],[3.4,'boy','heart'],[5.6,'girl','sparkle']]},
+  pup:{len:5.5,acts:{boy:'cheer',girl:'reach'},beat:[[.3,'pet','heart'],[1.2,'girl','note'],[2.6,'boy','heart'],[3.6,'girl','heart']]},
+  pupchase:{len:3.5,acts:{boy:'cheer',girl:'jump'},beat:[[.2,'pet','heart'],[.8,'boy','note'],[1.6,'girl','heart']]},
   show:{len:6,acts:{boy:'idle',girl:'crouch'},beat:[[.6,'boy','exclaim'],[2.2,'girl','sparkle'],[3.4,'boy','cheer'],[3.6,'boy','heart']]}};
-function playEnd(){for(const K of Object.values(KID)){K.play=false;K.fast=false;if(K.mode!=='move')kidPickAct(K)}PLAY=null;PLAYNEXT=GT+35+Math.random()*40}
+function playEnd(){for(const K of Object.values(KID)){K.play=false;K.fast=false;if(K.mode!=='move')kidPickAct(K)}
+  if(PUP&&S.pet.mode==='follow')pet.trail=[[pet.x,pet.y],[P.x,P.y]];PUP=null;PLAY=null;PLAYNEXT=GT+35+Math.random()*40}
+/* the puppy is free to play when he's resting where the kids are: waiting at home or where you left him,
+   or following you while you stand still (and not busy sniffing out a word or visiting a spirit) */
+let PUP=null;
+function pupFree(sc){return petShown()&&SCENE===sc&&!ENC&&!pet.sniff&&(S.pet.mode!=='follow'||(!P.path.length&&P.idle>4))}
+function pupNear(sc,x,y){const g=KG[sc];return Object.keys(g.n).filter(n=>n!==g.exit).sort((a,b)=>Math.hypot(g.n[a][0]-x,g.n[a][1]-y)-Math.hypot(g.n[b][0]-x,g.n[b][1]-y))[0]}
+function pupStart(){const sc=KID.boy.scene,B=KID.boy,G=KID.girl,n=pupNear(sc,pet.x,pet.y),chase=Math.random()<.5;
+  PUP={home:[pet.x,pet.y],chase:false};B.play=G.play=true;
+  kidGo(G,sc,n,[pet.x-11,pet.y]);kidGo(B,sc,n,[pet.x+11,pet.y+1]);
+  const nb=KG[sc].adj[n].filter(x=>x!==KG[sc].exit);
+  PLAY={type:chase?'pupchase':'pup',ph:'go',t:0,i:0,go:0,n,run:nb[Math.random()*nb.length|0]||n,back:[pet.x+11,pet.y+1]}}
 function kidUpdate(dt){const night=S.clock>.84,B=KID.boy,G=KID.girl;
   for(const K of Object.values(KID)){
     if(K.out>0){if((K.out-=dt)<=0)K.hidden=true;continue}
@@ -965,14 +984,22 @@ function kidUpdate(dt){const night=S.clock>.84,B=KID.boy,G=KID.girl;
     if(K.mode==='move'){kidStep(K,dt);continue}
     if(K.play)continue;
     if((K.t-=dt)<=0)kidWander(K)}
-  if(!PLAY){if(!night&&GT>PLAYNEXT&&B.scene===G.scene&&!B.hidden&&!G.hidden&&B.mode==='act'&&G.mode==='act')playStart();return}
+  if(!PLAY){if(!night&&GT>PLAYNEXT&&B.scene===G.scene&&!B.hidden&&!G.hidden&&B.mode==='act'&&G.mode==='act'){if(pupFree(B.scene)&&Math.random()<.6)pupStart();else playStart()}return}
+  if(PUP&&(!petShown()||SCENE!==B.scene||(S.pet.mode==='follow'&&P.path.length)))return playEnd();   // you walked off with him
   const pb=PLAYBEAT[PLAY.type];
+  if(PLAY.type==='pupchase'&&(PLAY.ph==='run'||PLAY.ph==='back')){PLAY.go+=dt;if(PLAY.go>40)return playEnd();G.act='clap';
+    if(B.arrived){if(PLAY.ph==='run'){PLAY.ph='back';kidGo(B,B.scene,PLAY.n,PLAY.back);B.fast=true}
+      else{PUP.chase=false;PLAY.ph='beat';PLAY.t=0;B.act=pb.acts.boy;G.act=pb.acts.girl;B.face=pet.x>B.x?1:-1;G.face=pet.x>G.x?1:-1}}
+    return}
   if(PLAY.ph==='go'){PLAY.go+=dt;if(PLAY.go>30)return playEnd();
     if(PLAY.type==='tag'&&G.arrived&&!B.arrived){G.act='jump'}
-    if(B.arrived&&G.arrived){PLAY.ph='beat';PLAY.t=0;B.act=pb.acts.boy;G.act=pb.acts.girl;B.face=G.x>B.x?1:-1;G.face=B.x>G.x?1:-1}
+    if(B.arrived&&G.arrived){
+      if(PLAY.type==='pupchase'){PLAY.ph='run';PLAY.go=0;BUB.push({who:'kid:boy',icon:'exclaim',t0:GT,dur:1.6});BUB.push({who:'pet',icon:'exclaim',t0:GT+.4,dur:1.6});
+        kidGo(B,B.scene,PLAY.run);B.fast=true;PUP.chase=true;return}
+      PLAY.ph='beat';PLAY.t=0;B.act=pb.acts.boy;G.act=pb.acts.girl;const fx=PUP?pet.x:null;B.face=(fx??G.x)>B.x?1:-1;G.face=(fx??B.x)>G.x?1:-1}
     return}
   PLAY.t+=dt;
-  while(PLAY.i<pb.beat.length&&pb.beat[PLAY.i][0]<=PLAY.t){const [,w,ic]=pb.beat[PLAY.i++];if(ic==='cheer')KID[w].act='cheer';else BUB.push({who:'kid:'+w,icon:ic,t0:GT,dur:2.2})}
+  while(PLAY.i<pb.beat.length&&pb.beat[PLAY.i][0]<=PLAY.t){const [,w,ic]=pb.beat[PLAY.i++];if(ic==='cheer')KID[w].act='cheer';else BUB.push({who:w==='pet'?'pet':'kid:'+w,icon:ic,t0:GT,dur:2.2})}
   if(PLAY.t>=pb.len)playEnd()}
 const KIDIMG={};const DIRF=new Set(['run0','run1','run2','run3','cart','side0','side1','walk3q','reach','point','sit0','sit1','crouch']);
 function kidFrame(K,t){const b=K.k==='boy',f=Math.floor(K.dist/(K.fast?4:5));
@@ -1116,13 +1143,13 @@ function hotAt(x,y){return (SCENE==='village'?SPOTS:SPOTS2).find(s=>x>=s.x&&x<=s
 function spiritAt(x,y,t){return visibleSpirits().find(k=>{const [sx,sy]=spiritPos(k,t);return Math.hypot(sx-x,sy-3-y)<10})}
 cv.addEventListener('mousemove',e=>{
   if(!$('#panel').hidden)return;const {x,y,r}=toWorld(e);const t=performance.now()/1000;const sp=spiritAt(x,y,t);const h=sp?null:hotAt(x,y);hover=h||null;cv.style.cursor=(sp||h)?'pointer':'default';
-  const tip=$('#tip');if(petAt(x,y)){cv.style.cursor='pointer';tip.hidden=false;tip.textContent=`${S.pet.name} · your puppy`;tip.style.left=(e.clientX-r.left)+'px';tip.style.top=(e.clientY-r.top)+'px';return}
+  const tip=$('#tip');if(petAt(x,y)){cv.style.cursor='pointer';tip.hidden=false;tip.textContent=S.pet.name?`${S.pet.name} · your puppy`:'Your puppy · click to name him';tip.style.left=(e.clientX-r.left)+'px';tip.style.top=(e.clientY-r.top)+'px';return}
   if(sp||h){tip.hidden=false;tip.textContent=sp?`${SP[sp].n} · ${SP[sp].en}`:h.word?(S.words[h.word].st?`${WORDS[h.word].h} · ${WORDS[h.word].en}`:'Something to inspect'):h.label;tip.style.left=(e.clientX-r.left)+'px';tip.style.top=(e.clientY-r.top)+'px'}else tip.hidden=true;
 });
 cv.addEventListener('mouseleave',()=>{hover=null;$('#tip').hidden=true});
 cv.addEventListener('click',e=>{
   if(!$('#panel').hidden)return;const {x,y}=toWorld(e);const t=performance.now()/1000;
-  if(petAt(x,y))return openPetMenu();
+  if(petAt(x,y))return S.pet.name?openPetMenu():openPetName();
   const sp=spiritAt(x,y,t);if(sp)return openSpirits(sp);
   const h=hotAt(x,y);$('#inspect').hidden=true;
   if(SCENE==='south'){const go=(x2,y2,cb)=>{P.path=path2(x2,y2);P.cb=cb};if(h)go(h.ax,h.ay,()=>h.word?inspect(h):ACTS[h.act]());else go(x,y,null);return}
