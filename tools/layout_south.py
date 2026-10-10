@@ -149,11 +149,10 @@ for j in range(45):
 def fr(key, boxes):  # window boxes in sheet coords for a building placed 1:1
     o = next(o for o in objs if o['k'] == key)
     return [[round(x0 * K), round(y0 * K), max(2, round((x1 - x0) * K)), max(2, round((y1 - y0) * K)), o['base'], on] for x0, y0, x1, y1, on in boxes]
-wins = (fr('court_back', [(196, 155, 221, 176, .95), (285, 155, 310, 176, .95), (234, 150, 262, 196, 1.5)]) +
+wins = (fr('court_back', [(196, 155, 221, 176, .95), (285, 155, 310, 176, .95), (236, 150, 265, 198, 1.5)]) +
         fr('court_left', [(112, 245, 142, 270, .92)]) + fr('court_right', [(357, 245, 387, 270, .97)]) +
-        fr('court_front', [(132, 433, 157, 450, .9), (323, 433, 348, 450, .93), (222, 428, 262, 470, 1.5)]) +
-        fr('inn', [(792, 72, 824, 94, .96), (912, 72, 944, 94, .98), (858, 72, 886, 96, .99),
-                   (797, 143, 826, 161, 1.5), (912, 143, 942, 161, 1.5), (862, 150, 886, 180, 1.5)]))
+        fr('court_front', [(132, 433, 157, 450, .9), (323, 433, 348, 450, .93), (222, 428, 262, 470, 1.5)]))
+# the inn has no night lights: its windows and door didn't line up well with a lit mask
 from winmask import layer, add_masks
 wins = add_masks(wins, layer(objs, lambda o: o['img']))
 lant, masks = [], []
