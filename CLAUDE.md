@@ -53,3 +53,9 @@ Random scattering was tried and rejected as messy. Place things deliberately.
 - The user prefers direct, concrete answers and real judgments over hedging.
 - Show visual changes (a screenshot or a published preview) rather than describing them.
 - When a visual change is disliked, revert it exactly, keeping only the parts they asked to keep.
+
+## Commits
+
+- Commit as the user, never as Claude. Before the first commit in a session run:
+  `git config user.name "MarcusW9" && git config user.email "160358373+MarcusW9@users.noreply.github.com"`
+- No `Co-Authored-By: Claude` line in commit messages.
