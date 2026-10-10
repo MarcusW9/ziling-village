@@ -1,4 +1,5 @@
 import json,io,base64,random
+import numpy as np
 from PIL import Image, ImageOps
 A='assets/buildings/';P='assets/props/';T='assets/trees/';B='assets/bushes/';L='assets/life/';V='assets/village2/';D='assets/decorations/';G='assets/ground/';C='assets/canal/'
 # (key,file,cx,base,width,flip)
@@ -60,6 +61,21 @@ for k,f,cx,base,w,fl in S:
 for x in (113,151):
     im=Image.open(D+('banner_left.png' if x<130 else 'banner_right.png')).convert('RGBA');h=round(im.height*6/im.width);r=im.resize((6,h),Image.LANCZOS)
     b=io.BytesIO();r.save(b,'PNG');objs.append({'k':'ban'+str(x),'x':x-3,'y':96,'w':6,'h':h,'base':133,'src':'data:image/png;base64,'+base64.b64encode(b.getvalue()).decode()})
+# Buildings whose image includes their front yard (path, beds) sort by the wall line, not the
+# image bottom, or anyone walking the yard draws behind it. The yard rows become a second
+# object at base 0, drawn beneath characters. Value: the wall's bottom row in the source image.
+SPLIT={'home':126}
+for o in list(objs):
+    if o['k'] not in SPLIT:continue
+    f=next(f for k,f,*_ in S if k==o['k']);src=Image.open(f).convert('RGBA')
+    cut=round(SPLIT[o['k']]*o['h']/src.height)
+    full=Image.open(io.BytesIO(base64.b64decode(o['src'].split(',')[1]))).convert('RGBA')
+    def part(keep):
+        a=np.array(full);yy=np.arange(full.height)[:,None];a[~keep(yy).repeat(full.width,1),3]=0
+        b=io.BytesIO();Image.fromarray(a).save(b,'PNG',optimize=True);return 'data:image/png;base64,'+base64.b64encode(b.getvalue()).decode()
+    yard=dict(o,k=o['k']+'_yard',base=0,src=part(lambda yy:yy>=cut))
+    o['src']=part(lambda yy:yy<cut);o['base']=o['y']+cut
+    objs.insert(objs.index(o),yard)
 s=s[:a]+'const OBJS='+json.dumps(objs)+s[e:]
 # --- lantern glows: find red lantern blobs inside lantern-bearing objects
 import numpy as np, scipy.ndimage as nd, re
