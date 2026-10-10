@@ -1,4 +1,5 @@
 import json,io,base64,random
+import numpy as np
 from PIL import Image, ImageOps
 A='assets/buildings/';P='assets/props/';T='assets/trees/';B='assets/bushes/';L='assets/life/';V='assets/village2/';D='assets/decorations/';G='assets/ground/';C='assets/canal/'
 # (key,file,cx,base,width,flip)
@@ -16,7 +17,7 @@ S=[('tea_house',A+'tea_house.png',132,132,165,0),('calli',A+'calligrapher_blank.
 # market yard
 ('barrels',P+'barrels.png',618,58,26,0),('baskets2',L+'basket_stack.png',462,124,12,0),('cart',V+'handcart.png',588,146,26,0),
 # home yard: everything against the walls
-('wash',L+'washing_line.png',212,268,30,0),('wood',L+'firewood.png',44,304,18,0),('jar1',L+'water_jar.png',196,304,11,0),
+('wash',L+'washing_line.png',212,268,30,0),('wood',L+'firewood.png',44,304,18,0),('jar1',L+'water_jar.png',201,304,11,0),
 # granny yard
 ('fence1',L+'fence_straight.png',466,262,26,0),('fbed1',V+'flower_bed_1.png',478,348,34,0),
 # back house yard
@@ -60,6 +61,21 @@ for k,f,cx,base,w,fl in S:
 for x in (113,151):
     im=Image.open(D+('banner_left.png' if x<130 else 'banner_right.png')).convert('RGBA');h=round(im.height*6/im.width);r=im.resize((6,h),Image.LANCZOS)
     b=io.BytesIO();r.save(b,'PNG');objs.append({'k':'ban'+str(x),'x':x-3,'y':96,'w':6,'h':h,'base':133,'src':'data:image/png;base64,'+base64.b64encode(b.getvalue()).decode()})
+# Buildings whose image includes their front yard (path, beds) sort by the wall line, not the
+# image bottom, or anyone walking the yard draws behind it. The yard rows become a second
+# object at base 0, drawn beneath characters. Value: the wall's bottom row in the source image.
+SPLIT={'home':126,'granny':135}
+for o in list(objs):
+    if o['k'] not in SPLIT:continue
+    f=next(f for k,f,*_ in S if k==o['k']);src=Image.open(f).convert('RGBA')
+    cut=round(SPLIT[o['k']]*o['h']/src.height)
+    full=Image.open(io.BytesIO(base64.b64decode(o['src'].split(',')[1]))).convert('RGBA')
+    def part(keep):
+        a=np.array(full);yy=np.arange(full.height)[:,None];a[~keep(yy).repeat(full.width,1),3]=0
+        b=io.BytesIO();Image.fromarray(a).save(b,'PNG',optimize=True);return 'data:image/png;base64,'+base64.b64encode(b.getvalue()).decode()
+    yard=dict(o,k=o['k']+'_yard',base=0,src=part(lambda yy:yy>=cut))
+    o['src']=part(lambda yy:yy<cut);o['base']=o['y']+cut
+    objs.insert(objs.index(o),yard)
 s=s[:a]+'const OBJS='+json.dumps(objs)+s[e:]
 # --- lantern glows: find red lantern blobs inside lantern-bearing objects
 import numpy as np, scipy.ndimage as nd, re
@@ -83,7 +99,8 @@ SHADOWS={'tea_house':(.88,.04,.96,1),'calli':(.98,.08,.85,1),'shop1':(.98,.03,.9
  'home':(.76,.17,.85,1),'granny':(.82,.04,.98,1),'stall_r':(.99,.08,.92,.6),'stall_b':(.99,.08,.92,.6),'stall_t':(.99,.08,.92,.6),
  'well':(.97,.15,.85,.6),'board':(.98,.1,.9,.5),'sundial':(.98,.2,.8,.5)}
 # window and doorway rectangles as fractions of each building image: (x0,y0,x1,y1, always_on)
-WINDOWS={'tea_house':[(.21,.68,.39,.80,0),(.61,.68,.79,.80,0),(.44,.68,.56,.88,1),(.27,.37,.36,.46,0),(.42,.37,.57,.46,0),(.63,.37,.73,.46,0)],
+# the tea house has no window lights: they never sat well, and 茶茶 and the keeper standing out front kept switching them off
+WINDOWS={
  'home':[(.24,.53,.35,.64,1),(.65,.53,.76,.64,1)],
  'granny':[(.32,.53,.45,.62,0),(.76,.53,.92,.62,0),(.58,.50,.70,.80,0)],
  'calli':[(.44,.55,.76,.86,0),(.23,.62,.35,.95,0)],

@@ -69,6 +69,27 @@ add('court_right', part(lambda x, y: (y < 405) & (x > 324)), cx0, cy0, 405)
 add('court_front', part(lambda x, y: (y >= 405) & (y < 482)), cx0, cy0, 478)
 add('court_beds', part(lambda x, y: y >= 482), cx0, cy0, 506)
 
+# courtyard yard story, from the building kit (assets/source-sheets/building_kit.png); positions are map px / K
+kit = np.array(Image.open(SRC + 'building_kit.png').convert('RGB')).astype(int)
+kfg = ~((kit[:, :, 0] - kit[:, :, 1] > 70) & (kit[:, :, 2] - kit[:, :, 1] > 70))
+for _ in range(2):
+    e = kfg & ~nd.binary_erosion(kfg); kfg &= ~(e & (kit[:, :, 0] - kit[:, :, 1] > 35) & (kit[:, :, 2] - kit[:, :, 1] > 35))
+def kpiece(x0, y0, x1, y1):
+    a = np.dstack([kit[y0:y1, x0:x1], np.where(kfg[y0:y1, x0:x1], 255, 0)]).astype('uint8')
+    im = Image.fromarray(a, 'RGBA'); return im.crop(im.getbbox())
+def kadd(key, im, mx, mbase, w, flip=False):          # centre x and base in map px, width in frame px
+    h = im.height * w / im.width; add(key, im, mx / K - w / 2, mbase / K - h, mbase / K, w, flip)
+KTABLE, KSTOOL, KJAR = kpiece(618, 488, 676, 542), kpiece(679, 505, 702, 530), kpiece(839, 511, 864, 541)
+KSTONE, KROCK = kpiece(631, 401, 658, 453), kpiece(535, 370, 563, 394)
+KFLOW = [kpiece(739, 413, 761, 442), kpiece(772, 417, 798, 442), kpiece(809, 417, 834, 444)]   # white: purple is too close to the magenta key
+kadd('c_jarL', KJAR, 143, 140, 16); kadd('c_jarR', KJAR, 169, 140, 16, True)        # a pair flanking the hall path
+kadd('c_table', KTABLE, 184, 238, 40)                                                 # tea table on the lawn, right of the path
+kadd('c_stoolL', KSTOOL, 171, 239, 15); kadd('c_stoolR', KSTOOL, 197, 239, 15)
+add_file('c_bamboo', T + 'bamboo.png', 112 / K, 247 / K, 30)                        # scholar's corner, bottom left
+kadd('c_stone', KSTONE, 128, 247, 17); kadd('c_rock', KROCK, 138, 248, 15)
+for i, (fx, fb, f) in enumerate([(123, 211, 0), (130, 214, 1), (137, 210, 2), (128, 207, 2), (143, 213, 0)]):
+    kadd(f'c_flower{i}', KFLOW[f], fx, fb, 15, i % 2 == 1)                          # one white drift by the pond
+
 add('inn', piece(752, 0, 994, 227), 752, 0, 222)
 # pavilion sits on the stone plinth painted into the ground (745-858, ~335-415)
 pav = piece(537, 27, 706, 244); add('pavilion', pav, 801 - 120 / 2, 415 - pav.height * 120 / pav.width, 405, 120)
@@ -104,6 +125,7 @@ for k, f, cx, base, w, fl in [
 # ---------------------------------------------------------------- ground, shadows, walk grid
 ground = Image.open(SRC + 'south_ground.png').convert('RGBA').resize((640, 361), Image.LANCZOS).crop((0, 0, 640, 360))
 SH = {'court_front': (.92, .02, .98), 'court_back': (.30, .30, .70), 'inn': (.98, .05, .95),
+      'c_table': (.95, .05, .95), 'c_jarL': (.95, .1, .9), 'c_jarR': (.95, .1, .9), 'c_stone': (.96, .1, .9), 'c_bamboo': (.97, .25, .75),
       'stall_veg': (.98, .1, .9), 'stall_cloth': (.98, .1, .9), 'stall_pots': (.98, .1, .9), 'pavilion': (.97, .12, .88)}
 sh = Image.new('RGBA', (640, 360)); sd = ImageDraw.Draw(sh)
 for o in objs:
@@ -127,11 +149,10 @@ for j in range(45):
 def fr(key, boxes):  # window boxes in sheet coords for a building placed 1:1
     o = next(o for o in objs if o['k'] == key)
     return [[round(x0 * K), round(y0 * K), max(2, round((x1 - x0) * K)), max(2, round((y1 - y0) * K)), o['base'], on] for x0, y0, x1, y1, on in boxes]
-wins = (fr('court_back', [(196, 155, 221, 176, .95), (285, 155, 310, 176, .95), (234, 150, 262, 196, 1.5)]) +
+wins = (fr('court_back', [(196, 155, 221, 176, .95), (285, 155, 310, 176, .95), (236, 150, 265, 198, 1.5)]) +
         fr('court_left', [(112, 245, 142, 270, .92)]) + fr('court_right', [(357, 245, 387, 270, .97)]) +
-        fr('court_front', [(132, 433, 157, 450, .9), (323, 433, 348, 450, .93), (222, 428, 262, 470, 1.5)]) +
-        fr('inn', [(792, 72, 824, 94, .96), (912, 72, 944, 94, .98), (858, 72, 886, 96, .99),
-                   (797, 143, 826, 161, 1.5), (912, 143, 942, 161, 1.5), (862, 150, 886, 180, 1.5)]))
+        fr('court_front', [(132, 433, 157, 450, .9), (323, 433, 348, 450, .93), (222, 428, 262, 470, 1.5)]))
+# the inn has no night lights: its windows and door didn't line up well with a lit mask
 from winmask import layer, add_masks
 wins = add_masks(wins, layer(objs, lambda o: o['img']))
 lant, masks = [], []
@@ -155,6 +176,7 @@ def spot(word, key, ax, ay, pad=0):
 spots = [spot('fandian', 'inn', 556, 152), spot('zhuozi', 'table0', 503, 166, 2), spot('yizi', 'bench', 392, 306, 2),
          spot('yifu', 'stall_cloth', 513, 350), spot('cai', 'stall_veg', 445, 350), spot('mifan', 'table1', 589, 166, 2), spot('dongxi', 'stall_pots', 578, 350),
          spot('pv_qiao', 'footbridge', 412, 160, 2),
+         {'word': 'piaoliang', 'x': 117, 'y': 197, 'w': 30, 'h': 18, 'ax': 150, 'ay': 220},
          {'word': 'li', 'x': 398, 'y': 222, 'w': 54, 'h': 32, 'ax': 432, 'ay': 284},
          {'word': 'pv_he', 'x': 400, 'y': 30, 'w': 40, 'h': 70, 'ax': 448, 'ay': 70},
          {'act': 'north', 'label': 'Back to the village square ↑', 'x': 284, 'y': 0, 'w': 76, 'h': 14, 'ax': 322, 'ay': 6}]
