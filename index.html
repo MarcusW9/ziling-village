@@ -11,8 +11,8 @@
 /* Layout: one game screen. Status bar, pixel-art world canvas, and a card tray that rises from the bottom for tasks. Deliberately single-theme: a lantern-lit water town at dusk. */
 :root{
   color-scheme:dark;
-  --ink:#121821; --panel:#1a2230; --panel2:#222c3c; --line:#33415a;
-  --text:#ece6da; --muted:#9ba6b8;
+  --ink:#15110d; --panel:#1f1914; --panel2:#2a221b; --line:#4a3c2e;
+  --text:#efe6d6; --muted:#ab9d88;
   --paper:#efe7d6; --paperInk:#1e2430; --paperEdge:#c9bea6; --paperMuted:#6b6f78;
   --lantern:#d9452e; --jade:#3fae8f; --gold:#e5b44c;
   --ok:#3f9f68; --bad:#c9483b;
@@ -23,7 +23,7 @@
 }
 html,body{height:100%}
 body{background:var(--ink);color:var(--text);font:15px/1.5 var(--body);margin:0}
-#app{max-width:1120px;margin:0 auto;padding-inline:16px;padding-block:12px 28px;display:flex;flex-direction:column;gap:10px}
+#app{max-width:max(720px,calc((100dvh - 118px) * 16 / 9 + 32px));margin:0 auto;padding-inline:16px;padding-block:12px 16px;display:flex;flex-direction:column;gap:10px}
 button{font-family:inherit}
 :focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 
@@ -46,7 +46,7 @@ button{font-family:inherit}
 .stage{position:relative}
 #world{width:100%;height:auto;aspect-ratio:16/9;display:block;image-rendering:pixelated;border-radius:12px;border:1px solid var(--line);background:#2c5540;cursor:default;transition:filter .3s}
 .stage.dim #world{filter:brightness(.5) saturate(.8)}
-#tip{position:absolute;pointer-events:none;background:rgba(18,24,33,.94);border:1px solid var(--line);padding:3px 9px;border-radius:6px;font:600 13px var(--body);white-space:nowrap;transform:translate(-50%,-130%)}
+#tip{position:absolute;pointer-events:none;background:rgba(21,17,13,.94);border:1px solid var(--line);padding:3px 9px;border-radius:6px;font:600 13px var(--body);white-space:nowrap;transform:translate(-50%,-130%)}
 .hintline{color:var(--muted);font-size:13px;display:flex;flex-wrap:wrap;gap:4px 16px}
 .hintline b{color:var(--text)}
 
