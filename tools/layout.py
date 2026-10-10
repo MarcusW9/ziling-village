@@ -64,7 +64,7 @@ for x in (113,151):
 # Buildings whose image includes their front yard (path, beds) sort by the wall line, not the
 # image bottom, or anyone walking the yard draws behind it. The yard rows become a second
 # object at base 0, drawn beneath characters. Value: the wall's bottom row in the source image.
-SPLIT={'home':126}
+SPLIT={'home':126,'granny':135}
 for o in list(objs):
     if o['k'] not in SPLIT:continue
     f=next(f for k,f,*_ in S if k==o['k']);src=Image.open(f).convert('RGBA')
