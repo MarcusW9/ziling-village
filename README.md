@@ -16,7 +16,7 @@ Progress saves in the browser (localStorage).
 ## What's in the game
 
 - Two areas: the village (canal, bridge, square, tea house, calligrapher, market, home, Granny Wang's house) and the south area (inn, pavilion, garden). Walk off the bottom of the square to reach the south area.
-- Nine spirits, each owning a set of HSK 1 words: 小字 brush (your companion), 茶茶 tea, 钱钱 coin, 家家 hearth, 日月 sundial, 雨雨 rain, 牛牛 clay ox, and in the south 鱼鱼 koi and 饱饱 clay stove.
+- Ten spirits, each owning a set of HSK 1 words: 小字 brush (your companion), 茶茶 tea, 钱钱 coin, 家家 hearth, 日月 sundial, 雨雨 rain, 牛牛 clay ox, and in the south 鱼鱼 koi, 饱饱 clay stove and 喵喵 porcelain cat.
 - A chow chow puppy from Granny Wang after your first chat with her. Tell him 来 to follow (he sniffs out hidden words) or 坐 to wait or stay home.
 - Four chores: tea house sentence building, market tag sorting, Granny Wang's quiz, and calligrapher radical puzzles.
 - Per-word mastery stages 1–4. Pinyin fades word by word, reviews are spaced, and a day cycle ends when you rest at home.
