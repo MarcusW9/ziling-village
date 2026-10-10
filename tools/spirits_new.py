@@ -1,4 +1,4 @@
-"""Build sprites for the spirits added after the first six: 牛牛 (niu), 鱼鱼 (fish) and 饱饱 (bao).
+"""Build sprites for the spirits added after the first six: 牛牛 (niu), 鱼鱼 (fish), 饱饱 (bao) and 喵喵 (mao).
 
 Writes into index.html:
   SPR2 - in-world frames {spirit: {stage: {pose: [dataURI, w, h]}}}
@@ -49,6 +49,8 @@ sets = {
     'fish': {0: stage({k: S + f'yuyu_v2/{k}.png' for k in ('front', 'happy', 'sleep')}, S + 'yuyu_v2/front.png')},
     # 饱饱 the clay stove: round and wide, so 15 px matches the others' visual weight
     'bao': {0: stage({k: S + f'baobao/{k}.png' for k in ('front', 'happy', 'sleep')}, S + 'baobao/front.png', 15)},
+    # 喵喵 the porcelain cat: the side poses (watch, crouch, a two-frame walk) face right; the game mirrors them for left
+    'mao': {0: stage({k: S + f'miaomiao/{k}.png' for k in ('front', 'happy', 'sleep', 'watch', 'crouch', 'walk1', 'walk2')}, S + 'miaomiao/front.png', 15)},
 }
 # twins: single poses at the base size, then joined into pairs
 tw = stage({f'{c}_{k}': T + f'{c}_{k}.png' for c in ('red', 'cream') for k in ('front', 'happy', 'sleep')}, T + 'red_front.png', 14)
@@ -67,7 +69,7 @@ spr = {k: {st: {p: [uri(im), im.width, im.height] for p, im in poses.items()} fo
 def portrait(path):
     im = Image.open(path).convert('RGBA'); im = im.crop(im.getbbox()); im.thumbnail((30, 30), Image.LANCZOS)
     c = Image.new('RGBA', (32, 32)); c.paste(im, ((32 - im.width) // 2, (32 - im.height) // 2), im); return uri(c)
-av = {'niu': {0: portrait(S + 'niuniu_clay/front.png')}, 'bao': {0: portrait(S + 'baobao/front.png')},
+av = {'niu': {0: portrait(S + 'niuniu_clay/front.png')}, 'mao': {0: portrait(S + 'miaomiao/front.png')}, 'bao': {0: portrait(S + 'baobao/front.png')},
       'fish': {0: portrait(S + 'yuyu_v2/front.png'), 1: portrait(T + 'pair_yinyang.png'), 2: portrait(D + 'pair_coil.png')}}
 
 s = open('index.html').read()

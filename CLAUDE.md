@@ -8,9 +8,10 @@ Cozy top-down browser game for learning HSK 1 Mandarin. See README.md for the fu
 - `tools/player_walk.py` embeds the player's walk cycles: 4 frames down and up, 3 frames left and right, all native (no mirroring). Check every side frame faces its direction; one wrong frame makes the player 'moonwalk'. Run it after changing the frames in `assets/sprites/player/`.
 - `tools/boat.py` embeds the 4-frame rowing boat, aligned on its canopy so only the boatman moves.
 - `tools/spirits.py` rebuilds the original six spirit sprites at one shared visible height. Run it after changing any spirit sheet in `assets/sprites/`.
-- `tools/spirits_new.py` builds 牛牛 (`niu`) and 鱼鱼 (`fish`) from individual pose PNGs into `SPR2` and their portraits into `AV2`. New spirits should be added here: a stage per evolution, poses `front`, `happy`, `sleep`, scaled per source sheet (sheets are drawn at different scales). `tools/twins.py` makes the cream twin by recolouring 鱼鱼.
+- `tools/spirits_new.py` builds 牛牛 (`niu`), 鱼鱼 (`fish`), 饱饱 (`bao`) and 喵喵 (`mao`) from individual pose PNGs into `SPR2` and their portraits into `AV2`. New spirits should be added here: a stage per evolution, poses `front`, `happy`, `sleep`, scaled per source sheet (sheets are drawn at different scales). `tools/twins.py` makes the cream twin by recolouring 鱼鱼.
 - `tools/npcs.py` cuts the villager sheets (`assets/source-sheets/npc_<name>.png`) into poses and places each villager (`NPCS`: scene, position, idle pose, greet pose). Villagers show their greet pose when the player is within 48 px. Granny Wang predates this and is still drawn from `EXTRA`.
 - `tools/pet.py` cuts the chow chow puppy sheet and embeds `PET` (walk frames per direction picked by hand after a facing check, plus sit, sleep and a gift portrait). Granny Wang gives him at the end of your first chat with her (day 1). Click him for 来 (follow) or 坐 (wait here, or stay home in the yard). While following he walks the player's trail and sniffs out unfound words within 60 px. His words 狗, 来, 坐 use `sp:'pet'`.
+- `tools/kids.py` cuts the two village children's sheets (`npc_kid_boy.png`, `npc_kid_girl.png`) into poses and embeds `KIDS`. Side poses face right and are mirrored for left. In the game the kids walk a hand-placed path graph per scene (`KG`, because neither map's walk data keeps them off houses), cross between maps at the south exit, play on their own or together (tag, sitting together, a drawing in the dirt), and walk home along the west quay at dusk. Move a node in `KG` if they clip a prop.
 - Spirits may set `scene:'south'` to live in the south area. `evo2` adds a second evolution, reached when every word is still Mastered after a 7-day review (tracked in `S.m4`).
 - `tools/layout.py` owns the village layout. It also generates the lantern glow points from the red lanterns in each lantern object. It re-embeds every placed asset and the detailed ground into `index.html`. **After changing any asset or position, run `python3 tools/layout.py` from the repo root** instead of hand-editing the `OBJS` array or the `MAPIMG` data URI.
 - `layout.py` also holds `SHADOWS` (contact shadow per building, as fractions of its image) and `WINDOWS` (window and door rectangles that light up at night). Moving a building moves its shadow and windows.
@@ -59,3 +60,7 @@ Random scattering was tried and rejected as messy. Place things deliberately.
 - Commit as the user, never as Claude. Before the first commit in a session run:
   `git config user.name "MarcusW9" && git config user.email "160358373+MarcusW9@users.noreply.github.com"`
 - No `Co-Authored-By: Claude` line in commit messages.
+
+## Art prompts
+
+- Put every image-generation prompt in a fenced code block, so the user can copy it in one click.
