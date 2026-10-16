@@ -37,12 +37,27 @@ def uri(im):
     b = io.BytesIO(); im.save(b, 'PNG'); return 'data:image/png;base64,' + base64.b64encode(b.getvalue()).decode()
 
 cut()
+# second sheet (pet_chowchow_poses.png, same scale): extra poses, all drawn facing right; the game mirrors them for left
+SRC2 = 'assets/source-sheets/pet_chowchow_poses.png'; OUT2 = 'assets/sprites/pet2/'
+SETS2 = {'bow': ['00', '01'], 'sniff': ['03', '04', '05', '04'], 'lie': ['15', '15', '15', '17'], 'jump': ['24', '25', '26', '27']}
+def cut2():
+    global SRC, OUT
+    keep = SRC, OUT; SRC, OUT = SRC2, OUT2; cut(); SRC, OUT = keep
+cut2()
 scale = HEIGHT / Image.open(f'{OUT}f00.png').height
 pet = {}
 for k, ids in SETS.items():
     fr = []
     for f in ids:
         im = Image.open(f'{OUT}f{f}.png').convert('RGBA')
+        im = im.resize((max(1, round(im.width * scale)), max(1, round(im.height * scale))), Image.LANCZOS)
+        x = np.array(im); x[..., 3] = np.where(x[..., 3] > 110, 255, 0)
+        im = Image.fromarray(x); fr.append([uri(im), im.width, im.height])
+    pet[k] = fr
+for k, ids in SETS2.items():
+    fr = []
+    for f in ids:
+        im = Image.open(f'{OUT2}f{f}.png').convert('RGBA')
         im = im.resize((max(1, round(im.width * scale)), max(1, round(im.height * scale))), Image.LANCZOS)
         x = np.array(im); x[..., 3] = np.where(x[..., 3] > 110, 255, 0)
         im = Image.fromarray(x); fr.append([uri(im), im.width, im.height])
